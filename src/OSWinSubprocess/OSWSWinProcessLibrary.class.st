@@ -85,6 +85,12 @@ OSWSWinProcessLibrary >> waitForSingleObject: handle milliSeconds: ms [
 ]
 
 { #category : #public }
+OSWSWinProcessLibrary >> win32LibraryName [
+	"While this is not a 'libc' properly, msvcrt has the functions we are defining here"
+	^ 'msvcrt.dll'
+]
+
+{ #category : #public }
 OSWSWinProcessLibrary >> win32ModuleName [
 	^ 'msvcrt.dll'
 ]
