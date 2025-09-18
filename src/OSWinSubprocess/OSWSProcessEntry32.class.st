@@ -1,13 +1,14 @@
 Class {
-	#name : #OSWSProcessEntry32,
-	#superclass : #FFIExternalStructure,
+	#name : 'OSWSProcessEntry32',
+	#superclass : 'FFIExternalStructure',
 	#pools : [
 		'OSWSWinTypes'
 	],
-	#category : #OSWinSubprocess
+	#category : 'OSWinSubprocess',
+	#package : 'OSWinSubprocess'
 }
 
-{ #category : #'field definition' }
+{ #category : 'field definition' }
 OSWSProcessEntry32 class >> fieldsDesc [
 	"self rebuildFieldAccessors"
 	

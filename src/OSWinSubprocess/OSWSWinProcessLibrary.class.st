@@ -5,20 +5,21 @@ It uses Windows MSVCRT dll.
 https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessa
 "
 Class {
-	#name : #OSWSWinProcessLibrary,
-	#superclass : #FFILibrary,
+	#name : 'OSWSWinProcessLibrary',
+	#superclass : 'FFILibrary',
 	#pools : [
 		'OSWSWinTypes'
 	],
-	#category : #OSWinSubprocess
+	#category : 'OSWinSubprocess',
+	#package : 'OSWinSubprocess'
 }
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary class >> clear: externalStructure [
 	^ self memSet: externalStructure value: 0
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 OSWSWinProcessLibrary class >> memSet: externalStructure value: value [
 	^ self uniqueInstance
 		memSet: externalStructure getHandle
@@ -26,12 +27,12 @@ OSWSWinProcessLibrary class >> memSet: externalStructure value: value [
 		size: externalStructure class structureSize
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> closeHandle: handle [
 	^ self ffiCall: #(int CloseHandle(void * handle)) module: #Kernel32
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> createProcess: appName command: commandLine processAttributes: processAttributes threadAttributes: threadAttributes inheritHandles: inheritHandles creationFlags: creationFlags environment: environment directory: currentDirectory startup: startupInfo processInformation: processInformation [
 	^ self ffiCall: 
 #(Boolean CreateProcessW(
@@ -51,12 +52,12 @@ OSWSWinProcessLibrary >> createProcess: appName command: commandLine processAttr
 	#(int CreateProcessA (const char * appName, char * command, 0, 0, 0, ulong flags, 0, 0, ExternalAddress * startup, ExternalAddress * processInfo)) module: #Kernel32"
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> getLastError [
 	^ self ffiCall: #(DWORD GetLastError(void)) module: #Kernel32
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> getProcess: hProcess exitCode: lpExitCode [
 	^ self ffiCall: 
 #(Boolean GetExitCodeProcess(
@@ -65,12 +66,30 @@ OSWSWinProcessLibrary >> getProcess: hProcess exitCode: lpExitCode [
 )) module: #Kernel32
 ]
 
-{ #category : #public }
+{ #category : 'public' }
+OSWSWinProcessLibrary >> getStartupInfoW: startupInfo [
+	^ self ffiCall: 
+#(void GetStartupInfoW(
+  #OSWSStartupInfoW *startupInfo
+)) module: #Kernel32
+]
+
+{ #category : 'public' }
 OSWSWinProcessLibrary >> memSet: ptr value: value size: size [
 	^ self ffiCall: #(void* memset(void* ptr, int value, size_t size))
 ]
 
-{ #category : #public }
+{ #category : 'public' }
+OSWSWinProcessLibrary >> openDesiredState: dwDesiredAccess inheritance: bInheritHandle pid: dwProcessId [
+	^ self ffiCall: #(
+HANDLE OpenProcess(
+  DWORD dwDesiredAccess,
+	Boolean bInheritHandle,
+  DWORD dwProcessId
+)) module: #Kernel32
+]
+
+{ #category : 'public' }
 OSWSWinProcessLibrary >> terminate:hProcess exitCode:uExitCode [
 	^ self ffiCall: #(
 Boolean TerminateProcess(
@@ -79,18 +98,18 @@ Boolean TerminateProcess(
 )) module: #Kernel32
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> waitForSingleObject: handle milliSeconds: ms [
 	^ self ffiCall: #( uint WaitForSingleObject (void * handle, uint ms)) module: #Kernel32
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> win32LibraryName [
 	"While this is not a 'libc' properly, msvcrt has the functions we are defining here"
 	^ 'msvcrt.dll'
 ]
 
-{ #category : #public }
+{ #category : 'public' }
 OSWSWinProcessLibrary >> win32ModuleName [
 	^ 'msvcrt.dll'
 ]
