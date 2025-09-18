@@ -64,6 +64,22 @@ OSWSWinProcess class >> PROCESS_ALL_ACCESS [
 	^  16r0000FFFF
 ]
 
+{ #category : 'constants' }
+OSWSWinProcess class >> PROCESS_TERMINATE [
+	"Desired state to have in a handle in order to be able to terminate it"
+	^  16r00000001
+]
+
+{ #category : 'constants' }
+OSWSWinProcess class >> SYNCHRONIZE [
+	"For console processes, the new process does not inherit its parent's console (the default). The new process can call the AllocConsole function at a later time to create a console. For more information, see Creation of a Console.
+This value cannot be used with CREATE_NEW_CONSOLE.
+
+More information: https://docs.microsoft.com/fr-fr/windows/win32/procthread/process-creation-flags"
+
+	^ 16r00100000
+]
+
 { #category : 'private' }
 OSWSWinProcess class >> TIMEOUT_INFINITE [
 	^ 16rffffffff
@@ -99,7 +115,7 @@ OSWSWinProcess class >> findProcessWith: aPIDValue [
 	The time-out interval elapsed, and the object's state is nonsignaled."
 	processToPID := self new .
 	processHandle := OSWSWinProcessLibrary uniqueInstance
-		                 openDesiredState: self PROCESS_ALL_ACCESS
+		                 openDesiredState: (self SYNCHRONIZE |self PROCESS_TERMINATE )
 		                 inheritance: false
 		                 pid: aPIDValue.
 	processToPID processInfo: (OSWSProcessInformation externalNew ).
@@ -363,7 +379,7 @@ OSWSWinProcess >> surroundArgumentsWithDoubleQuotes [
 { #category : 'public' }
 OSWSWinProcess >> terminate [
 	| success |
-	"self isRunning ifFalse: [ ^ true ]."
+	self isRunning ifFalse: [ ^ true ].
 	
 	success := self ffiLibrary 
 		terminate: processInfo hProcess 
