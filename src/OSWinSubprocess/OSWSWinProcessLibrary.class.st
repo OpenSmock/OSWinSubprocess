@@ -53,6 +53,14 @@ OSWSWinProcessLibrary >> createProcess: appName command: commandLine processAttr
 ]
 
 { #category : 'public' }
+OSWSWinProcessLibrary >> enumList: lpidProcess ProcessNb: cb nbBytesUsed: lpcbNeeded [
+	^ self ffiCall: 
+#(Boolean EnumProcesses #(DWORD *lpidProcess,
+  DWORD  cb,
+  LPDWORD lpcbNeeded)) module: #Psapi
+]
+
+{ #category : 'public' }
 OSWSWinProcessLibrary >> getLastError [
 	^ self ffiCall: #(DWORD GetLastError(void)) module: #Kernel32
 ]

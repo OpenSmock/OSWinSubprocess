@@ -108,6 +108,22 @@ OSWSWinProcess class >> WAIT_TIMEOUT [
 ]
 
 { #category : 'constants' }
+OSWSWinProcess class >> enumProcesses [
+"set a default value to 200"
+	
+	^ self enumProcesses:  200 
+]
+
+{ #category : 'constants' }
+OSWSWinProcess class >> enumProcesses: anInteger [
+|processList nbBytes|
+nbBytes := (FFIExternalValueHolder ofType: #uint32) new.
+processList:= (FFIExternalArray externalNewType: 'int' size: anInteger) .
+	OSWSWinProcessLibrary uniqueInstance enumList: processList  ProcessNb: processList size  nbBytesUsed: nbBytes.
+	^ processList
+]
+
+{ #category : 'constants' }
 OSWSWinProcess class >> findProcessWith: aPIDValue [
 
 	| processHandle processToPID|
